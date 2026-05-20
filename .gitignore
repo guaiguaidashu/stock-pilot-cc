@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnp.*
+.pnpm-debug.log*
+
+# Build outputs
+.next/
+out/
+build/
+*.tsbuildinfo
+
+# Environment files (contain API keys/secrets)
+.env*
+!.env.example
+
+# OS files
+.DS_Store
+*.pem
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Misc
+*.pem
