@@ -36,6 +36,8 @@ export default function IndicesPage() {
   const [activeIndex, setActiveIndex] = useState(INDICES[0]);
   const [quotes, setQuotes] = useState<IndexQuote[]>([]);
   const [klineData, setKlineData] = useState<KLineData[]>([]);
+  const [loadingQuotes, setLoadingQuotes] = useState(false);
+  const [loadingKLine, setLoadingKLine] = useState(false);
   const klineRef = useRef<HTMLDivElement>(null);
   const volumeRef = useRef<HTMLDivElement>(null);
   const klineChartRef = useRef<echarts.ECharts | null>(null);
@@ -62,11 +64,14 @@ export default function IndicesPage() {
   // 加载指数行情
   useEffect(() => {
     async function loadQuotes() {
+      setLoadingQuotes(true);
       try {
         const data = await getIndexQuotes();
         setQuotes(Array.isArray(data) ? data : []);
       } catch {
         setQuotes([]);
+      } finally {
+        setLoadingQuotes(false);
       }
     }
     loadQuotes();
@@ -75,11 +80,14 @@ export default function IndicesPage() {
   // 加载 K 线数据
   useEffect(() => {
     async function loadKLine() {
+      setLoadingKLine(true);
       try {
         const data = await getIndexKLine(activeIndex.code);
         setKlineData(data);
       } catch {
         setKlineData([]);
+      } finally {
+        setLoadingKLine(false);
       }
     }
     loadKLine();
@@ -182,7 +190,9 @@ export default function IndicesPage() {
 
           {/* 当前指数行情 */}
           <div className="mb-4 flex items-center gap-6">
-            {activeQuote ? (
+            {loadingQuotes ? (
+              <div className="text-lg text-[var(--foreground)]/60">加载中...</div>
+            ) : activeQuote ? (
               <>
                 <div className="text-2xl font-bold">{activeQuote.price.toFixed(2)}</div>
                 <div
@@ -200,8 +210,16 @@ export default function IndicesPage() {
 
           {/* K 线图 */}
           <div className="grid grid-rows-2 gap-2" style={{ height: "calc(100vh - 320px)" }}>
-            <div ref={klineRef} className="w-full" />
-            <div ref={volumeRef} className="w-full" />
+            {loadingKLine ? (
+              <div className="w-full flex items-center justify-center bg-[var(--card)] rounded-lg">
+                <div className="text-[var(--foreground)]/60">加载中...</div>
+              </div>
+            ) : (
+              <>
+                <div ref={klineRef} className="w-full" />
+                <div ref={volumeRef} className="w-full" />
+              </>
+            )}
           </div>
         </div>
       </main>
